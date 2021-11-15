@@ -39,16 +39,19 @@ def _get_closest_pop_dnc(pts_sbx: list, pts_sby: list):
     mid_idx = n // 2
     mid_point = pts_sbx[mid_idx]
 
-    pts_sbx_left = pts_sbx[:mid_idx]
-    pts_sbx_right = pts_sbx[mid_idx:]
+    pts_sbx_left = pts_sbx[:mid_idx]  # time complexity: n
+    pts_sbx_right = pts_sbx[mid_idx:]  # time complexity: n
+
+    # >>>>>>>>>>>>
+    # time complexity: n
     pts_sby_left = list()
     pts_sby_right = list()
-
     for point in pts_sby:
         pts_sby_right.append(point) if point[0] > mid_point[0] else pts_sby_left.append(point)
+    # <<<<<<<<<<<<
 
-    p1_left, p2_left, delta_left = _get_closest_pop_dnc(pts_sbx_left, pts_sby_left)
-    p1_right, p2_right, delta_right = _get_closest_pop_dnc(pts_sbx_right, pts_sby_right)
+    p1_left, p2_left, delta_left = _get_closest_pop_dnc(pts_sbx_left, pts_sby_left)  # time complexity: T(n/2)
+    p1_right, p2_right, delta_right = _get_closest_pop_dnc(pts_sbx_right, pts_sby_right)  # time complexity: T(n/2)
 
     if delta_left < delta_right:
         p1, p2, delta = p1_left, p2_left, delta_left
@@ -56,17 +59,25 @@ def _get_closest_pop_dnc(pts_sbx: list, pts_sby: list):
         p1, p2, delta = p1_right, p2_right, delta_right
 
     # >>> check points around split boundary >>>
+
+    # >>>>>>>>>>>>
+    # time complexity: n
     pts_in_recheck_area = list()
     for point in pts_sby:
         if mid_point[0] - delta < point[1] < mid_point[1] + delta:
             pts_in_recheck_area.append(point)
+    # <<<<<<<<<<<<
 
+    # >>>>>>>>>>>>
+    # time complexity: 6n
     for i in range(len(pts_in_recheck_area)):
         for j in range(i + 1, min(i + 7, len(pts_in_recheck_area))):
             dist = get_dist(pts_in_recheck_area[i], pts_in_recheck_area[j])
             if dist < delta:
                 print(f"update in recheck-area: {pts_in_recheck_area[i]}, {pts_in_recheck_area[j]}")
                 p1, p2, delta = pts_in_recheck_area[i], pts_in_recheck_area[j], dist
+    # <<<<<<<<<<<<
+
     # <<< check points around split boundary <<<
 
     return p1, p2, delta
